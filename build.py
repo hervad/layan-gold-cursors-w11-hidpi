@@ -69,9 +69,10 @@ GRADIENT_STOPS = {
 OUTLINED_STOPS = {"#716ffb", "#4648fb", "#cd2ec5", "#21c4d6", "#ff4903", "#df0b29"}
 
 # Help "?": height as a multiple of the disc radius, and upward shift from the
-# disc center as a fraction of the radius.
-HELP_GLYPH_SCALE = 1.5
-HELP_GLYPH_RAISE = 0.12
+# disc center as a fraction of the radius. At 1.5x, raised 12%, it nearly
+# touched the top of the disc and left a gap below.
+HELP_GLYPH_SCALE = 1.3
+HELP_GLYPH_RAISE = 0.0
 HELP_GLYPH_WEIGHT = 0.55  # extra stroke (SVG units) to make the "?" bold
 HELP_EMBOSS_OFFSET = 0.35  # light copy of the "?" shifted down-right (SVG units)
 
@@ -195,8 +196,14 @@ def tune_help_glyph(root: ET.Element) -> None:
     scale_px = 16  # render at 16 px per unit for a precise box
     png = resvg_py.svg_to_bytes(svg_string=ET.tostring(probe, encoding="unicode"),
                                 width=SVG_GRID * scale_px, height=SVG_GRID * scale_px)
-    x0, y0, x1, y1 = Image.open(io.BytesIO(bytes(png))).getchannel("A").getbbox()
-    gx, gy = (x0 + x1) / 2 / scale_px, (y0 + y1) / 2 / scale_px
+    alpha = Image.open(io.BytesIO(bytes(png))).getchannel("A")
+    x0, y0, x1, y1 = alpha.getbbox()
+    # Center horizontally on the dot, not the whole box: the hook bulges to
+    # the right, so a box-centered "?" had its stem and dot left of center.
+    rows = [alpha.crop((0, y, alpha.width, y + 1)).getbbox() for y in range(y0, y1)]
+    gap = max(i for i, row in enumerate(rows) if row is None)  # last empty row above the dot
+    dx0, _, dx1, _ = alpha.crop((0, y0 + gap + 1, alpha.width, y1)).getbbox()
+    gx, gy = (dx0 + dx1) / 2 / scale_px, (y0 + y1) / 2 / scale_px
     k = HELP_GLYPH_SCALE * r / ((y1 - y0) / scale_px)
     tx, ty = cx, cy - HELP_GLYPH_RAISE * r
     transform = f"translate({tx:.4f} {ty:.4f}) scale({k:.4f}) translate({-gx:.4f} {-gy:.4f})"

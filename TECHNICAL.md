@@ -32,7 +32,7 @@ The SVGs in `src/svg` are Layan's `svg` variant, unmodified. `goldify()` in `bui
 | White help "?" | `#392310`, bold, with a light emboss |
 
 - **Outline:** a 1-unit `#392310` stroke painted under the fill (`paint-order: stroke`), so about half of it shows outside the shape. Shadows and glows are left as they are.
-- **Help "?":** thickened with a 0.55-unit stroke, scaled so its height is 1.5 × the disc radius, and centered 12% of the radius above the disc's center. Its bounds are measured from a render, so the glyph stays centered at every size. Upstream's soft shadow becomes a light copy offset down-right.
+- **Help "?":** thickened with a 0.55-unit stroke, scaled so its height is 1.3 × the disc radius, and centered on the disc: vertically by its full height, horizontally by its dot, so the dot and stem sit on the disc's vertical axis (the hook bulges right, so centering the whole box pushed them left). Its bounds are measured from a render, so the glyph stays centered at every size. Upstream's soft shadow becomes a light copy offset down-right.
 
 ## Hotspots
 
