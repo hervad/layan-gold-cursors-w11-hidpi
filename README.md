@@ -5,7 +5,7 @@
 **A warm gold edition of the Layan cursors for Windows 11, rendered from the original vector artwork at every size
 Windows picks for your display scale and pointer size.**
 
-[![Download](https://img.shields.io/github/v/release/hervad/Layan-Gold-cursors-for-Windows?label=download&style=flat-square&color=d99a00)](https://github.com/hervad/Layan-Gold-cursors-for-Windows/releases/latest)
+[![Download](https://img.shields.io/github/v/release/hervad/layan-gold-cursors-w11-hidpi?label=download&style=flat-square&color=d99a00)](https://github.com/hervad/layan-gold-cursors-w11-hidpi/releases/latest)
 [![Windows 11](https://img.shields.io/badge/Windows-11-0078D4?style=flat-square)](#install)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 
@@ -15,7 +15,7 @@ Windows picks for your display scale and pointer size.**
 
 ## Install
 
-1. **Download** `layan-gold-w11-hidpi-v….zip` from the [latest release](https://github.com/hervad/Layan-Gold-cursors-for-Windows/releases/latest)
+1. **Download** `layan-gold-w11-hidpi-v….zip` from the [latest release](https://github.com/hervad/layan-gold-cursors-w11-hidpi/releases/latest)
    and extract it.
 2. **Right-click** `install.inf` in the extracted `Layan Cursors (Gold)` folder and choose **Install**, then approve the
    administrator prompt. On Windows 11, **Install** is under **Show more options**.
