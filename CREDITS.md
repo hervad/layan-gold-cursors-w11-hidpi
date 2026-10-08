@@ -11,11 +11,12 @@ Layan Cursors (Gold) builds on several free cursor themes.
 
 The gold edition is by [hervad](https://github.com/hervad):
 
-- `build.py` recolors Layan's gradients to gold, adds the brown outline, and enlarges and embosses the help "?"
-- It renders every cursor at the sizes Windows requests, from 32 to 256 px
+- `tools/goldify.py` recolors Layan's gradients to gold, adds the brown outline, and enlarges and embosses the help "?"
+- [w11-cursor-toolkit](https://github.com/hervad/w11-cursor-toolkit) (since v3) renders every cursor at the sizes Windows
+  requests, from 32 to 256 px, and generates the installer
 - Pointer hotspots are measured at each shape's tip
-- It generates the installer and uninstaller
+- Location and person select (new in v3) use the pointing hand
 
 ## License
 
-Distributed under the **GNU General Public License v3.0**, the license of Layan cursors. See [LICENSE](LICENSE). The SVG sources and build script are included, so everything can be rebuilt and modified.
+Distributed under the **GNU General Public License v3.0**, the license of Layan cursors. See [LICENSE](LICENSE). The SVG sources, `tools/goldify.py` and `theme.toml` are included, so everything can be rebuilt and modified.

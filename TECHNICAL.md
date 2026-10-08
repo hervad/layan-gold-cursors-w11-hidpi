@@ -2,25 +2,46 @@
 
 How the gold cursors are built, and the reasoning behind each choice.
 
+## Build (since v3)
+
+v3 is built by [w11-cursor-toolkit](https://github.com/hervad/w11-cursor-toolkit), the same toolchain as the other
+`*-w11-hidpi` cursor themes, instead of this repo's own `build.py`:
+
+1. `tools/goldify.py` writes gold SVGs from the unmodified upstream SVGs in `src/svg` to `build/gold`. Its styling code
+   is v2's `goldify()` and `tune_help_glyph()`, moved without changes.
+2. `w11cursor build theme.toml` renders every size with resvg (as v2 did), packs the `.cur`/`.ani` files and writes the
+   installer; `w11cursor validate` re-reads every file.
+
+**Equivalence with v2.0.1:** every cursor, every frame and every size present in both builds was compared - 347 images,
+**0 hotspot differences and 0 pixel differences**.
+
 ## How Windows sizes cursors
 
-At the default pointer size, Windows uses 32 px below 150% display scale, 48 px at 150–199%, 64 px at 200–299%, 96 px at 300–399% and 128 px from 400% ([Microsoft: Cursor Sizes](https://learn.microsoft.com/en-us/windows/win32/menurc/about-cursors#cursor-sizes)). The pointer-size slider multiplies that by 1, 1.5, 2 … 8 (`CursorBaseSize` 32–256). If a file contains the exact size, Windows uses it; otherwise it takes the next larger image and scales it down.
-
-Earlier releases contained 32, 40, 48, 64, 96 and 128 px. Those were exact at the default pointer size, but 40 px is never requested, and larger pointer sizes had no 72, 144, 192 or 256 px images.
+Windows picks the image size as `CursorBaseSize × factor`, where `CursorBaseSize` is the pointer-size slider
+(32, 48, 64 … 256) and the factor depends on the display scale: **1.0 from 100 % to 149 %, 1.5 from 150 % to 199 %**
+(measured on Windows 11 25H2; see the toolkit's
+[SIZE_POLICY.md](https://github.com/hervad/w11-cursor-toolkit/blob/main/docs/SIZE_POLICY.md)). Higher scales are
+assumed to continue the pattern (2.0, 2.5, 3.0). If the file has that exact size Windows uses it; otherwise it resamples
+the closest one. v2's table (×2 at 200 %, ×3 at 300 %, ×4 at 400 %, after Microsoft's documentation) was not measured.
 
 ## Size ladders
 
 | File type | Embedded sizes (px) |
 | --- | --- |
-| Static `.cur` | 32, 48, 64, 72, 96, 128, 144, 192, 256 |
-| `working.ani` | 32, 48, 64, 96, 128, 256 |
-| `busy.ani` | 32, 48, 64, 96, 128 |
+| Static `.cur` | 32, 48, 64, 72, 80, 96, 112, 120, 128, 144, 160, 168, 176, 192, 200, 208, 216, 224, 240, 256 |
+| `working.ani`, `busy.ani` | 32, 48, 64, 72, 80, 96, 120, 128 |
 
-On Windows 11, `LoadImage` silently returns `NULL` for an `.ani` whose frames contain too much image data. Frames of about 80 KB failed in our tests. `build.py` always includes 32–128 px for animations, then adds 256 and 192 px only if every frame stays under `ANI_FRAME_BUDGET` (56 KiB). The busy ring's glow and gradients compress poorly (its 256 px image alone is about 38 KB), so it stops at 128 px. On Windows, the build then loads every generated file with `LoadImageW` at every size and fails if any load returns `NULL`.
+Compared with v2: every v2 size is still there except `working.ani`'s 256 px; added are the sizes the measured rule
+asks for (e.g. 80 px at pointer size 4, 72 and 120 px at 150 %).
+
+**Animation limit (measured):** Windows refuses an `.ani` frame in which an image starts past byte 65,535 of the frame;
+the total file size doesn't matter. With 144 px added, a busy frame would start an image at byte 71,832, so the
+animations stop at 128 px (largest start: 55,743). The busy ring's glow and gradients compress poorly, so `busy.ani`
+is about 1.6 MB.
 
 ## Gold styling
 
-The SVGs in `src/svg` are Layan's `svg` variant, unmodified. `goldify()` in `build.py` applies the style at build time:
+The SVGs in `src/svg` are Layan's `svg` variant, unmodified. `tools/goldify.py` applies the style:
 
 | Upstream | Gold |
 | --- | --- |
@@ -31,12 +52,18 @@ The SVGs in `src/svg` are Layan's `svg` variant, unmodified. `goldify()` in `bui
 | Near-black I-beam | `#FFDF77` fill, `#392310` outline |
 | White help "?" | `#392310`, bold, with a light emboss |
 
-- **Outline:** a 1-unit `#392310` stroke painted under the fill (`paint-order: stroke`), so about half of it shows outside the shape. Shadows and glows are left as they are.
-- **Help "?":** thickened with a 0.55-unit stroke, scaled so its height is 1.3 × the disc radius, and centered on the disc: vertically by its full height, horizontally by its dot, so the dot and stem sit on the disc's vertical axis (the hook bulges right, so centering the whole box pushed them left). Its bounds are measured from a render, so the glyph stays centered at every size. Upstream's soft shadow becomes a light copy offset down-right.
+- **Outline:** a 1-unit `#392310` stroke painted under the fill (`paint-order: stroke`), so about half of it shows
+  outside the shape. Shadows and glows are left as they are.
+- **Help "?":** thickened with a 0.55-unit stroke, scaled so its height is 1.3 × the disc radius, and centered on the
+  disc: vertically by its full height, horizontally by its dot, so the dot and stem sit on the disc's vertical axis.
+  Its bounds are measured from a render, so the glyph stays centered at every size. Upstream's soft shadow becomes a
+  light copy offset down-right.
 
 ## Hotspots
 
-The SVGs use a 32-unit grid, so one unit is one pixel at 32 px. Hotspots are mapped to `floor(coord × size / 32)`, the pixel that contains the point. Several of upstream's hotspots sat in empty space, so the pointer hotspots are measured at the visible tip:
+The SVGs use a 32-unit grid, so one unit is one pixel at 32 px. Hotspots are mapped to `floor(coord × size / 32)`, the
+pixel that contains the point (`hotspot_mode = "pixel"` in `theme.toml`). Several of upstream's hotspots sat in empty
+space, so the pointer hotspots are measured at the visible tip:
 
 | Cursor | Upstream | Now |
 | --- | --- | --- |
@@ -49,9 +76,8 @@ Everything else uses its center (16, 16).
 
 ## Installer
 
-`build.py` generates `install.inf`, `uninstall.ps1` and `uninstall.cmd`:
-
-- **Install** copies the files (and `install.inf` itself) to `%WINDIR%\Cursors\Layan Cursors (Gold)`, which needs administrator rights. It registers the scheme under `HKCU\Control Panel\Cursors\Schemes` and applies it to the current user. It then asks Windows to open Mouse Properties › Pointers, where clicking **OK** loads the cursors immediately. It also removes the scheme and files installed by earlier releases (*Layan Gold Cursors*).
-- **Uninstall** resets the cursors to the Windows defaults, but only if Layan Gold is active, and reloads them with `SystemParametersInfo(SPI_SETCURSORS)`. It then runs the INF's `DefaultUninstall` section to delete the files and the scheme. The old `uninstall.bat` reset every cursor role even when another scheme was in use.
-
-The release zip is written with fixed timestamps, so rebuilding from the same sources produces the same archive.
+The toolkit writes `install.inf` and `uninstall.cmd`. **Install** copies the files to
+`%WINDIR%\Cursors\Layan Cursors (Gold)` (the same folder and scheme name as v2, so an upgrade replaces v2 in place),
+registers the scheme under `HKCU\Control Panel\Cursors\Schemes`, applies it and opens Mouse Properties.
+**Uninstall** removes the scheme entry and opens Mouse Properties; the folder is deleted by hand (README). v2's own
+`DefaultUninstall` and its removal of the pre-v2 *Layan Gold Cursors* scheme are not part of v3.

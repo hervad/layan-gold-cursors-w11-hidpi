@@ -6,3 +6,4 @@
 *.ani binary
 *.zip binary
 *.png binary
+LICENSE -text
