@@ -77,7 +77,7 @@ Everything else uses its center (16, 16).
 ## Installer
 
 The toolkit writes `install.inf` and `uninstall.cmd`. **Install** copies the files to
-`%WINDIR%\Cursors\Layan Cursors (Gold)` (the same folder and scheme name as v2, so an upgrade replaces v2 in place),
+`%WINDIR%\Cursors\Layan Gold W11 HiDPI` (since 3.1; v2-3.0 used *Layan Cursors (Gold)*, see the README's upgrade note),
 registers the scheme under `HKCU\Control Panel\Cursors\Schemes`, applies it and opens Mouse Properties.
 **Uninstall** removes the scheme entry and opens Mouse Properties; the folder is deleted by hand (README). v2's own
 `DefaultUninstall` and its removal of the pre-v2 *Layan Gold Cursors* scheme are not part of v3.

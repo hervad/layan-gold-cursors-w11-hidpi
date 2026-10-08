@@ -17,14 +17,19 @@ Windows picks for your display scale and pointer size.**
 
 1. **Download** `layan-gold-w11-hidpi-v….zip` from the [latest release](https://github.com/hervad/layan-gold-cursors-w11-hidpi/releases/latest)
    and extract it.
-2. **Right-click** `install.inf` in the extracted `Layan Cursors (Gold)` folder and choose **Install**, then approve the
+2. **Right-click** `install.inf` in the extracted `Layan Gold W11 HiDPI` folder and choose **Install**, then approve the
    administrator prompt. On Windows 11, **Install** is under **Show more options**.
 3. **Apply:** Mouse Properties may open by itself; if it doesn't, press <kbd>Win</kbd>+<kbd>R</kbd> and run `main.cpl`.
-   On the **Pointers** tab, pick **Layan Cursors (Gold)** and click **OK**.
+   On the **Pointers** tab, pick **Layan Gold W11 HiDPI** and click **OK**.
 
-**Upgrading from v2?** Just install: the scheme keeps its name and folder, so it updates in place. v2's own files
-(`arrow.cur`, `pen.cur`, `size_ns.cur` …) stay in the folder unused; for a clean folder, run v2's `uninstall.cmd` first
-or delete `C:\Windows\Cursors\Layan Cursors (Gold)` before installing.
+**Upgrading from 3.0 or 2.x?** Since 3.1 the scheme is called **Layan Gold W11 HiDPI** (it was *Layan Cursors (Gold)*),
+so installing adds it next to the old one. To remove the old one, pick another scheme in `main.cpl`, then run this in an
+administrator PowerShell:
+
+```powershell
+reg delete "HKCU\Control Panel\Cursors\Schemes" /v "Layan Cursors (Gold)" /f
+Remove-Item "C:\Windows\Cursors\Layan Cursors (Gold)" -Recurse
+```
 
 ## Why they stay sharp
 
@@ -91,7 +96,7 @@ failure blocks the release.
 3. Delete the cursor files from an administrator PowerShell:
 
 ```powershell
-Remove-Item "C:\Windows\Cursors\Layan Cursors (Gold)" -Recurse
+Remove-Item "C:\Windows\Cursors\Layan Gold W11 HiDPI" -Recurse
 ```
 
 ## Troubleshooting
@@ -99,7 +104,7 @@ Remove-Item "C:\Windows\Cursors\Layan Cursors (Gold)" -Recurse
 - **No "Install" option:** on Windows 11, choose **Show more options** or press <kbd>Shift</kbd>+<kbd>F10</kbd>. Extract
   the zip first; Windows can't install from inside it.
 - **Cursors went back to Windows' own:** choosing a **Mouse pointer style** in Accessibility settings replaces the
-  scheme. Select **Layan Cursors (Gold)** again in `main.cpl › Pointers`.
+  scheme. Select **Layan Gold W11 HiDPI** again in `main.cpl › Pointers`.
 - **Some apps show other cursors:** browsers (for CSS cursors), games, and some creative tools draw their own cursors.
 
 ## Build from source
